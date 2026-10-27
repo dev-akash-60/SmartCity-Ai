@@ -1,6 +1,8 @@
-
-const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = (
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_API_BASE_URL ||
+    "http://127.0.0.1:8000"
+).replace(/\/+$/, "");
 
 export async function predictAirQuality(payload) {
     let response;
@@ -17,9 +19,11 @@ export async function predictAirQuality(payload) {
                 body: JSON.stringify(payload),
             }
         );
-    } catch {
+    } catch (error) {
+        console.error("Backend connection error:", error);
+
         throw new Error(
-            "Cannot connect to the backend. Make sure your FastAPI server is running."
+            "Cannot connect to the backend. Check the backend URL and server status."
         );
     }
 
@@ -32,7 +36,9 @@ export async function predictAirQuality(payload) {
             ? detail.map((item) => item.msg).join(", ")
             : typeof detail === "string"
                 ? detail
-                : "The prediction request failed.";
+                : `Prediction failed with HTTP ${response.status}.`;
+
+        console.error("Prediction API error:", response.status, responseData);
 
         throw new Error(message);
     }

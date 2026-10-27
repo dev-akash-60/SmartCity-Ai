@@ -1,10 +1,13 @@
 import axios from "axios";
 
+const API_BASE_URL = (
+    import.meta.env.VITE_API_URL ||
+    "http://127.0.0.1:8000"
+).replace(/\/+$/, "");
+
 const api = axios.create({
-    baseURL: (
-        import.meta.env.VITE_API_URL 
-    ).replace(/\/+$/, ""),
-    timeout: 15000,
+    baseURL: API_BASE_URL,
+    timeout: 30000,
     headers: {
         "Content-Type": "application/json",
     },
